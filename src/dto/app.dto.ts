@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsInt, IsOptional, Max, Min } from 'class-validator';
+import { IsEnum, IsInt, IsOptional, Max, Min } from 'class-validator';
 
 export class PaginationDto {
   @IsOptional()
@@ -15,4 +15,18 @@ export class PaginationDto {
   @Min(1)
   @Max(100)
   limit: number;
+}
+
+export enum SORT {
+  ASC = 'asc',
+  DESC = 'desc',
+}
+
+export class KeywordDto {
+  @IsOptional()
+  @IsEnum(SORT)
+  orderBy: SORT;
+
+  @IsOptional()
+  query: string;
 }

@@ -1,6 +1,10 @@
-import { PaginationDto } from '../dto/pagination.dto';
+import { IntersectionType } from '@nestjs/mapped-types';
+import { KeywordDto, PaginationDto } from 'src/dto/app.dto';
 
-export class GetMedicinesDto extends PaginationDto {
-  query: string;
-  orderBy: string;
-}
+/**
+ * IntersectionType combines 2 or many dtos
+ */
+export class GetMedicinesDto extends IntersectionType(
+  PaginationDto,
+  KeywordDto,
+) {}
