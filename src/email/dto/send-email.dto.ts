@@ -1,7 +1,7 @@
 import { Type } from 'class-transformer';
-import { IsEmail } from 'class-validator';
+import { IsArray, IsEmail } from 'class-validator';
 
 export class SendEmailDto {
-  @IsEmail()
-  toEmail: string;
+  @IsArray()
+  toEmails: string[];
 }
