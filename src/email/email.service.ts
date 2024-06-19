@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { SendEmailDto } from './dto/send-email.dto';
 import { MailerService } from '@nestjs-modules/mailer';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class EmailService {
@@ -15,10 +16,11 @@ export class EmailService {
 
   sendEmail(sendEmailDto: SendEmailDto) {
     const { toEmail } = sendEmailDto;
+    const configService = new ConfigService();
     this.mailerService
       .sendMail({
         to: toEmail, // list of receivers
-        from: 'lktubom@gmail.com', // sender address
+        from: configService.get('MAILER_USER'), // sender address
         subject: 'Testing Nest MailerModule ✔', // Subject line
         text: 'welcome', // plaintext body
         html: '<b>welcome 1</b>', // HTML body content

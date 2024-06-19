@@ -14,9 +14,14 @@ import { EmailModule } from './email/email.module';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { SendEmailEntity } from './email/entities/email.dto';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+
     TypeOrmModule.forRoot({
       type: 'mysql',
       host: 'localhost',
@@ -27,62 +32,40 @@ import { SendEmailEntity } from './email/entities/email.dto';
       entities: [User, Medicine, LikeEntity, FavoriteEntity, SendEmailEntity],
       synchronize: true,
     }),
+
     UsersModule,
     MedicineModule,
     LikeModule,
     FavoriteModule,
     EmailModule,
 
-    MailerModule.forRoot({
-      transport: {
-        host: 'smtp.gmail.com',
-        // port: 587,
-        // ignoreTLS: true,
-        secure: true,
-        auth: {
-          user: 'lktubom@gmail.com',
-          pass: 'tebvvsadwkboghbp', //fqke fmwj qeyk nunj
+    MailerModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        transport: {
+          host: configService.get('MAILER_HOST'),
+          port: configService.get('MAILER_PORT'),
+          secure: true,
+          auth: {
+            user: configService.get('MAILER_USER'),
+            pass: configService.get('MAILER_PASSWORD'),
+          },
+          logger: true, // enable logging
+          debug: true, // enable debug output
         },
-        // tls: {
-        //   rejectUnauthorized: false,
-        // },
-        logger: true, // enable logging
-        debug: true, // enable debug output
-      },
-      defaults: {
-        from: '"nestjs" <lktubom@gmail.com>',
-      },
-      template: {
-        dir: __dirname + '/templates',
-        adapter: new HandlebarsAdapter(),
-        options: {
-          strict: true,
+        defaults: {
+          from: '"nestjs" <no-reply@gmail.com>',
         },
-      },
+        template: {
+          dir: __dirname + '/templates',
+          adapter: new HandlebarsAdapter(),
+          options: {
+            strict: true,
+          },
+        },
+      }),
     }),
-    // MailerModule.forRoot({
-    //   transport: {
-    //     host: 'localhost',
-    //     port: 1025,
-    //     ignoreTLS: true,
-    //     secure: false,
-    //     auth: {
-    //       user: process.env.MAILDEV_INCOMING_USER,
-    //       pass: process.env.MAILDEV_INCOMING_PASS,
-    //     },
-    //   },
-    //   defaults: {
-    //     from: '"No Reply" <no-reply@localhost>',
-    //   },
-    //   preview: true,
-    //   template: {
-    //     dir: process.cwd() + '/template/',
-    //     adapter: new HandlebarsAdapter(), // or new PugAdapter() or new EjsAdapter()
-    //     options: {
-    //       strict: true,
-    //     },
-    //   },
-    // }),
   ],
   controllers: [AppController],
   providers: [AppService],
