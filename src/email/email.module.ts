@@ -10,10 +10,6 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
 @Module({
   imports: [
     TypeOrmModule.forFeature([SendEmailEntity]),
-    ConfigModule.forRoot({
-      // isGlobal: true,
-    }),
-
     MailerModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -26,8 +22,8 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
             user: configService.get('MAILER_USER'),
             pass: configService.get('MAILER_PASSWORD'),
           },
-          logger: true, // enable logging
-          debug: true, // enable debug output
+          // logger: true, // enable logging
+          // debug: true, // enable debug output
         },
         defaults: {
           from: '"nestjs" <no-reply@gmail.com>',
